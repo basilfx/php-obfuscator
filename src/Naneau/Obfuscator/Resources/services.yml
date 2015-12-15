@@ -6,6 +6,9 @@ parameters:
     obfuscator.scramble_private_property.ignore: []
     obfuscator.scramble_use.ignore: []
 
+    # Tries to obfuscate everything (nonprivate methods) inclusive. This is prone to major issues and "private_method" should be renamed above to ignore all methods.
+    obfuscator.hammer: true,
+
     # Specific options for comment remover
     obfuscator.remove_comments.preserve_annotations: true
     obfuscator.remove_comments.annotations_flavor: "generic"
@@ -80,6 +83,7 @@ services:
             - @obfuscator.scrambler
         calls:
             - [addIgnore, [%obfuscator.scramble_private_method.ignore%]]
+            - [setHammerMode, [%obfuscator.hammer%]]
 
     # Scramble private properties
     obfuscator.node_visitor.scramble_private_property:

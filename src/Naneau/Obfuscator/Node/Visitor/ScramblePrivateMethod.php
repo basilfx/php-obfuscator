@@ -23,6 +23,7 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_ as ClassNode;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Function_ as FunctionNode;
 
 /**
  * ScramblePrivateMethod
@@ -45,6 +46,8 @@ class ScramblePrivateMethod extends ScramblerVisitor
 {
     use SkipTrait;
     use TrackingRenamerTrait;
+
+    private $hammer;
 
     /**
      * Before node traversal
@@ -79,7 +82,7 @@ class ScramblePrivateMethod extends ScramblerVisitor
         if ($node instanceof MethodCall || $node instanceof StaticCall) {
 
             // Method call or static call is not calling private methods
-            if (!$this->isLocal($node)) {
+            if (!$this->hammer &&!$this->isLocal($node)) {
                 return;
             }
 
@@ -184,7 +187,10 @@ class ScramblePrivateMethod extends ScramblerVisitor
     {
         foreach ($nodes as $node) {
             // Scramble the private method definitions
-            if ($node instanceof ClassMethod && ($node->type & ClassNode::MODIFIER_PRIVATE)) {
+            if (
+		$node instanceof ClassMethod && $node->type & ClassNode::MODIFIER_PRIVATE
+		|| ($this->hammer && ($node instanceof ClassMethod || $node instanceof FunctionNode))
+            ) {
 
                 // Record original name and scramble it
                 $originalName = $node->name;
@@ -199,5 +205,9 @@ class ScramblePrivateMethod extends ScramblerVisitor
                 $this->scanMethodDefinitions($node->stmts);
             }
         }
+    }
+
+    public function setHammerMode($hammer) {
+	$this->hammer = $hammer;
     }
 }
