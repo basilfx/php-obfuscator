@@ -7,7 +7,7 @@ parameters:
     obfuscator.scramble_use.ignore: []
 
     # Tries to obfuscate everything (nonprivate methods) inclusive. This is prone to major issues and "private_method" should be renamed above to ignore all methods.
-    obfuscator.hammer: true,
+    obfuscator.hammer: false,
 
     # Specific options for comment remover
     obfuscator.remove_comments.preserve_annotations: true
